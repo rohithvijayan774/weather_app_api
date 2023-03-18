@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:weather_app_sample/models/weather_model.dart';
 import 'package:weather_app_sample/models/weather_service.dart';
 
@@ -21,13 +22,18 @@ class _MainScreenState extends State<MainScreen> {
   double tempC = 0;
   double feelsC = 0;
   String locationName = '';
-  String localTime = '';
   String regionName = '';
   String countryName = '';
   double windSpeedKph = 0;
   int humidityPercent = 0;
   int isDay = 0;
   String bgImage = '';
+  String dateNow = '';
+  String timeNow = '';
+  String date = '';
+
+  bool isLoading = true;
+
   TextEditingController searchController = TextEditingController();
 
   // @override
@@ -39,12 +45,14 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+
     getWeather();
+    // dateTimeParsing();
   }
 
   void getWeather() async {
     if (searchController.text.isEmpty) {
-      log('message');
+      log('getting weather');
       weather = await weatherService.getWeatherData('Kozhikode');
     } else {
       weather = await weatherService.getWeatherData(searchController.text);
@@ -58,6 +66,18 @@ class _MainScreenState extends State<MainScreen> {
           'https://images.wallpaperscraft.com/image/single/dawn_fog_morning_149465_2160x3840.jpg';
     }
 
+    // DateTime date = DateTime.parse(weather.localTime);
+    // final formattedDate = DateFormat.yMMMd().format(date);
+    // final time = DateFormat.jm().format(date);
+    // log(formattedDate);
+    // log(time);
+
+    // date time parsing formatting
+
+    // log(formattedDate);
+    // log(time);
+    // log('parsing completed');
+
     setState(() {
       locationName = weather.name;
       currentWeather = weather.condition;
@@ -67,11 +87,15 @@ class _MainScreenState extends State<MainScreen> {
       feelsC = weather.feelsLikeC;
       windSpeedKph = weather.windKph;
       humidityPercent = weather.humidity;
-      localTime = weather.localTime;
-      // final _date = DateTime.parse(localTime);
-      // final formattedDate = DateFormat.yMMMd('en_US').format(_date);
-      // print(formattedDate);
-      // print(formattedDate);
+
+      DateTime date = DateTime.parse(weather.localTime);
+      String formattedDate = DateFormat.yMMMd().format(date);
+      String time = DateFormat.jm().format(date);
+
+      dateNow = formattedDate;
+      timeNow = time;
+      isLoading = false;
+      // date = weather.localTime;
     });
   }
 
@@ -84,19 +108,20 @@ class _MainScreenState extends State<MainScreen> {
           image: DecorationImage(
             image: NetworkImage(
               bgImage,
-              // 'https://images.unsplash.com/photo-1530908295418-a12e326966ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80'
-              // 'https://c4.wallpaperflare.com/wallpaper/575/50/369/simple-background-gradient-abstract-blurred-wallpaper-preview.jpg',
             ),
             fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: ListView(
               children: [
+                const SizedBox(
+                  height: 10,
+                ),
                 CupertinoSearchTextField(
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   backgroundColor: const Color.fromARGB(43, 0, 0, 0),
                   controller: searchController,
                   onSubmitted: (String value) {
@@ -189,6 +214,14 @@ class _MainScreenState extends State<MainScreen> {
                       Column(
                         children: const [
                           Icon(
+                            Icons.date_range_outlined,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Icon(
                             Icons.access_time,
                             color: Colors.white,
                             size: 30,
@@ -214,7 +247,17 @@ class _MainScreenState extends State<MainScreen> {
                       Column(
                         children: const [
                           Text(
-                            'Date & Time :',
+                            'Date :',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Text(
+                            'Time :',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -245,7 +288,17 @@ class _MainScreenState extends State<MainScreen> {
                       Column(
                         children: [
                           Text(
-                            localTime,
+                            dateNow,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Text(
+                            timeNow,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,

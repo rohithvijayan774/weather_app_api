@@ -13,7 +13,7 @@ class WeatherService {
       final uri =
           Uri.http('api.weatherapi.com', '/v1/current.json', queryParameters);
       final response = await http.get(uri);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode <= 299) {
         return Weather.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Can not get weather');
